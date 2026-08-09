@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BDA AOA(BDA Nethravathi Apartment) — Expense Portal</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap');
+:root{
+  --bg:#F4F6F9;--surface:#fff;--s2:#F0F3F7;--border:#E0E5EE;--border2:#C8D0DC;
+  --text:#181C24;--t2:#4A5568;--t3:#8A95A8;
+  --accent:#1A56DB;--al:#EBF2FF;--ah:#1344B8;
+  --green:#0D9F5A;--gl:#D6F5E7;--red:#DC2626;--rl:#FEE2E2;
+  --orange:#D97706;--ol:#FEF3C7;--purple:#6D28D9;--pl:#EDE9FE;
+  --teal:#0891B2;--tl:#CFFAFE;
+  --r:10px;--sh:0 1px 3px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);
+  --shm:0 4px 16px rgba(0,0,0,.10);--shl:0 8px 32px rgba(0,0,0,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;}
+
+/* ── Login / DB Setup ── */
+.auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#1A56DB 0%,#6D28D9 100%);}
+.auth-card{background:var(--surface);border-radius:16px;width:100%;max-width:420px;box-shadow:var(--shl);overflow:hidden;}
+.auth-banner{padding:28px 28px 20px;text-align:center;}
+.auth-logo{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,#1A56DB,#6D28D9);display:inline-flex;align-items:center;justify-content:center;font-size:26px;color:#fff;margin-bottom:14px;}
+.auth-title{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;}
+.auth-sub{font-size:12px;color:var(--t3);margin-top:4px;}
+.auth-body{padding:0 28px 28px;}
+.auth-divider{border:none;border-top:1px solid var(--border);margin:16px 0;}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+label{font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;}
+input,select,textarea{padding:9px 12px;border:1px solid var(--border2);border-radius:7px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s,box-shadow .15s;width:100%;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,219,.1);}
+textarea{resize:vertical;min-height:72px;}
+.btn{padding:9px 18px;border-radius:8px;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--ah);}
+.btn-ghost{background:var(--s2);color:var(--text);border:1px solid var(--border2);}
+.btn-ghost:hover{background:var(--border);}
+.btn-success{background:var(--green);color:#fff;}
+.btn-success:hover{background:#0A8A4D;}
+.btn-danger{background:var(--red);color:#fff;}
+.btn-danger:hover{background:#B91C1C;}
+.btn-warn{background:var(--orange);color:#fff;}
+.btn-warn:hover{background:#B45309;}
+.btn-sm{padding:6px 13px;font-size:12px;}
+.btn-xs{padding:4px 10px;font-size:11px;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;}
+.errmsg{color:var(--red);font-size:12px;margin-top:8px;display:none;}
+.cfgnote{background:var(--al);border:1px solid #BFDBFE;border-radius:8px;padding:10px 14px;font-size:12px;color:var(--accent);margin-bottom:14px;line-height:1.6;}
+
+/* ── Header ── */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--sh);}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-logo{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#1A56DB,#6D28D9);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;flex-shrink:0;}
+.brand-name{font-family:'DM Serif Display',serif;font-size:18px;font-weight:400;}
+.brand-sub{font-size:11px;color:var(--t3);margin-top:-1px;}
+.hright{display:flex;align-items:center;gap:10px;}
+.role-pill{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;}
+.avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,#1A56DB,#6D28D9);flex-shrink:0;}
+
+/* ── Tabs ── */
+.tabs{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:2px;overflow-x:auto;}
+.tab{padding:13px 16px;border:none;background:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--t3);border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tbadge{background:var(--s2);border-radius:10px;padding:2px 7px;font-size:11px;font-weight:700;min-width:20px;text-align:center;}
+.tab.active .tbadge{background:var(--al);color:var(--accent);}
+
+/* ── Layout ── */
+.page{max-width:1120px;margin:0 auto;padding:28px 24px;}
+.ph{margin-bottom:22px;}
+.pt{font-size:20px;font-weight:700;letter-spacing:-.02em;}
+.ps{font-size:13px;color:var(--t3);margin-top:3px;}
+
+/* ── Stats ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh);position:relative;overflow:hidden;}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.stat.c-blue::before{background:var(--accent);}
+.stat.c-or::before{background:var(--orange);}
+.stat.c-gr::before{background:var(--green);}
+.stat.c-pu::before{background:var(--purple);}
+.sico{font-size:22px;margin-bottom:8px;}
+.slbl{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;}
+.sval{font-size:28px;font-weight:700;font-family:'DM Serif Display',serif;margin:4px 0 2px;}
+.snote{font-size:11px;color:var(--t3);}
+
+/* ── Card ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);}
+.ch{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.ct{font-size:14px;font-weight:600;}
+.cs{font-size:12px;color:var(--t3);margin-top:1px;}
+.cb{padding:20px;}
+
+/* ── Form grid ── */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.fgrid .fg{margin-bottom:0;}
+.fg.full{grid-column:1/-1;}
+.divider{border:none;border-top:1px solid var(--border);margin:18px 0;}
+
+/* ── Recipients ── */
+.rech{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.reclbl{font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;}
+.recrow{display:grid;grid-template-columns:1fr 140px auto auto;gap:8px;align-items:center;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;}
+.ibtn{width:32px;height:32px;border-radius:7px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s;flex-shrink:0;}
+.ib-add{background:var(--al);color:var(--accent);}
+.ib-add:hover{background:var(--accent);color:#fff;}
+.ib-del{background:var(--rl);color:var(--red);}
+.ib-del:hover{background:var(--red);color:#fff;}
+.ib-pin{background:var(--ol);color:var(--orange);}
+.ib-pin.on{background:var(--orange);color:#fff;}
+
+/* ── Attachments ── */
+.attrow{display:flex;align-items:center;gap:10px;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:8px;}
+.attthumb{width:44px;height:44px;border-radius:6px;object-fit:cover;flex-shrink:0;cursor:pointer;border:1px solid var(--border2);background:var(--surface);}
+.attthumb.attpdf{display:flex;align-items:center;justify-content:center;font-size:18px;}
+.attinfo{flex:1;min-width:0;}
+.attname{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.attsize{font-size:11px;color:var(--t3);}
+.attchips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;}
+.attchip{display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--border);border-radius:20px;padding:4px 10px 4px 4px;cursor:pointer;font-size:11px;}
+.attchip img{width:24px;height:24px;border-radius:50%;object-fit:cover;}
+.attchip .attpdf-ico{width:24px;height:24px;border-radius:50%;background:var(--rl);color:var(--red);display:flex;align-items:center;justify-content:center;font-size:11px;}
+.attcount-btn{background:var(--al);color:var(--accent);border:1px solid #BFDBFE;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;cursor:pointer;}
+.attcount-btn:hover{background:var(--accent);color:#fff;}
+.lightbox{position:fixed;inset:0;background:rgba(10,15,30,.82);display:none;align-items:center;justify-content:center;z-index:400;padding:24px;cursor:zoom-out;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:92vw;max-height:92vh;border-radius:8px;box-shadow:var(--shl);}
+.attgallery{display:flex;flex-wrap:wrap;gap:12px;}
+.attgitem{width:110px;text-align:center;}
+.attgitem img,.attgitem .attpdf{width:110px;height:110px;border-radius:8px;object-fit:cover;cursor:pointer;border:1px solid var(--border2);}
+.attgitem .attpdf{display:flex;align-items:center;justify-content:center;font-size:30px;background:var(--s2);}
+.attgitem .attgname{font-size:11px;color:var(--t2);margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* ── Badges ── */
+.badge{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
+.b-sec{background:#FEF9C3;color:#92400E;}
+.b-trs{background:var(--tl);color:var(--teal);}
+.b-prs{background:var(--pl);color:var(--purple);}
+.b-ok{background:var(--gl);color:var(--green);}
+.b-rej{background:var(--rl);color:var(--red);}
+.b-admin{background:#F1F5F9;color:#475569;}
+
+/* ── WF steps ── */
+.wfrow{display:flex;align-items:center;gap:0;flex-wrap:nowrap;}
+.wfs{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap;}
+.wf-done{background:var(--gl);color:var(--green);}
+.wf-active{background:var(--al);color:var(--accent);}
+.wf-idle{background:var(--s2);color:var(--t3);}
+.wf-rej{background:var(--rl);color:var(--red);}
+.wfarr{color:var(--border2);font-size:12px;padding:0 2px;}
+
+/* ── Expense approval cards ── */
+.ecard{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:14px;overflow:hidden;box-shadow:var(--sh);}
+.ect{padding:14px 20px;background:var(--s2);border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.ectype{font-size:15px;font-weight:700;}
+.ecref{font-size:11px;color:var(--t3);margin-top:2px;}
+.ecamt{font-size:20px;font-weight:700;color:var(--accent);white-space:nowrap;}
+.ecb{padding:16px 20px;}
+.emeta{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;}
+.emv{font-size:13px;font-weight:600;}
+.emk{font-size:11px;color:var(--t3);}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:12px;background:var(--s2);border:1px solid var(--border);}
+.chip.pinned{background:var(--ol);border-color:#FDE68A;}
+.trail{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-top:10px;font-size:12px;}
+.tri{display:flex;align-items:baseline;gap:8px;padding:4px 0;border-bottom:1px solid var(--border);}
+.tri:last-child{border-bottom:none;}
+.trole{font-weight:600;color:var(--t2);min-width:86px;}
+
+/* ── Table ── */
+.twrap{overflow-x:auto;}
+.dpager{display:flex;align-items:center;justify-content:center;gap:14px;padding-top:14px;}
+.dpage-label{font-size:12px;color:var(--t3);font-weight:600;}
+.dpager button:disabled{opacity:.4;cursor:not-allowed;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;background:var(--s2);border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#FAFBFC;}
+.amt{font-weight:700;}
+
+/* ── Wealth / Cash widgets ── */
+.wealth-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:22px;}
+.wealth-item{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;box-shadow:var(--sh);flex:1;min-width:220px;}
+.wealth-av{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;flex-shrink:0;}
+.wealth-in .wealth-av{background:linear-gradient(135deg,#0D9F5A,#0A8A4D);}
+.wealth-out .wealth-av{background:linear-gradient(135deg,#DC2626,#B91C1C);}
+.wealth-net .wealth-av{background:linear-gradient(135deg,#6D28D9,#5B21B6);}
+.wealth-lbl{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;}
+.wealth-val{font-size:21px;font-weight:700;font-family:'DM Serif Display',serif;margin-top:2px;}
+.daygrp{margin-bottom:18px;}
+.daygrp-h{display:flex;justify-content:space-between;align-items:center;padding:8px 4px;border-bottom:2px solid var(--border);margin-bottom:6px;}
+
+/* ── User management ── */
+.umgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;margin-top:4px;}
+.ucard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:var(--sh);display:flex;align-items:center;gap:14px;}
+.uav{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0;}
+.uinfo .uname{font-weight:600;font-size:14px;}
+.uinfo .uuser{font-size:12px;color:var(--t3);margin-top:1px;}
+.uinfo .urole{margin-top:5px;}
+.uacts{margin-left:auto;display:flex;gap:6px;flex-shrink:0;}
+
+/* ── Modal ── */
+.overlay{position:fixed;inset:0;background:rgba(10,15,30,.45);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;}
+.overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:14px;width:100%;max-width:440px;box-shadow:var(--shl);animation:su .2s ease;}
+@keyframes su{from{transform:translateY(18px);opacity:0}to{transform:none;opacity:1}}
+.mh{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.mt2{font-size:15px;font-weight:600;}
+.mb2{padding:20px;}
+.mf{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
+.xbtn{background:none;border:none;cursor:pointer;font-size:18px;color:var(--t3);padding:2px;}
+
+/* ── Toast ── */
+.toasts{position:fixed;bottom:24px;right:24px;z-index:300;display:flex;flex-direction:column;gap:8px;}
+.toast{background:var(--text);color:#fff;padding:12px 18px;border-radius:9px;font-size:13px;box-shadow:var(--shl);animation:ti .2s ease;display:flex;align-items:center;gap:8px;max-width:340px;}
+.toast.ok{background:var(--green);}
+.toast.err{background:var(--red);}
+@keyframes ti{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+
+/* ── Misc ── */
+.hidden{display:none!important;}
+.mt12{margin-top:12px;}
+.mt18{margin-top:18px;}
+.empty{text-align:center;padding:52px 20px;color:var(--t3);}
+.eico{font-size:44px;margin-bottom:12px;}
+.spin-wrap{text-align:center;padding:36px;color:var(--t3);font-size:13px;}
+.spin{display:inline-block;width:18px;height:18px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:sp .55s linear infinite;vertical-align:middle;margin-right:7px;}
+@keyframes sp{to{transform:rotate(360deg)}}
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:40px;}
+.pw-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;color:var(--t3);}
+@media(max-width:720px){
+  .stats{grid-template-columns:1fr 1fr;}
+  .fgrid{grid-template-columns:1fr;}
+  .recrow{grid-template-columns:1fr 110px auto auto;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════ DB SETUP (first time) ════════════ -->
+<div id="dbSetup" class="auth-screen">
+  <div class="auth-card">
+    <div class="auth-banner">
+      <div class="auth-logo">🏢</div>
+      <div class="auth-title">BDA AOA(BDA Netravathi Apartment) Expense Portal</div>
+      <div class="auth-sub">Connect your Turso database to get started</div>
+    </div>
+    <div class="auth-body">
+      <div class="cfgnote">🔗 Enter your <strong>Turso DB URL</strong> and <strong>Auth Token</strong> from <a href="https://turso.tech" target="_blank" style="color:inherit;font-weight:600">turso.tech</a>. Tables and a default super-admin account are created automatically.</div>
+      <div class="fg">
+        <label>Turso Database URL</label>
+        <input type="text" id="cfgUrl" placeholder="libsql://your-db.turso.io"/>
+      </div>
+      <div class="fg">
+        <label>Turso Auth Token</label>
+        <div class="pw-wrap">
+          <input type="password" id="cfgToken" placeholder="eyJhb…" id="cfgToken"/>
+          <button class="pw-eye" onclick="togglePw('cfgToken',this)">👁</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;margin-top:6px" onclick="connectDB()">🔌 Connect Database</button>
+      <div class="errmsg" id="dbErr"></div>
+      <div class="divider"></div>
+      <div style="font-size:11px;color:var(--t3);text-align:center">Default super-admin login: <strong style="color:var(--text)">Check with your Association</strong> — change after first login</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ LOGIN ════════════ -->
+<div id="loginScreen" class="auth-screen hidden">
+  <div class="auth-card">
+    <div class="auth-banner">
+      <div class="auth-logo">🏢</div>
+      <div class="auth-title">Sign In</div>
+      <div class="auth-sub">BDA Apartment Owners Association</div>
+    </div>
+    <div class="auth-body">
+      <div class="fg">
+        <label>Username</label>
+        <input type="text" id="lgUser" placeholder="Enter username" autocomplete="username"/>
+      </div>
+      <div class="fg">
+        <label>Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="lgPass" placeholder="Enter password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+          <button class="pw-eye" onclick="togglePw('lgPass',this)">👁</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;margin-top:4px" onclick="doLogin()">🔐 Sign In</button>
+      <div class="errmsg" id="lgErr"></div>
+      <div class="divider"></div>
+      <div style="font-size:11px;color:var(--t3);text-align:center">Contact your Admin to get an account</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ GUEST CASH/WEALTH VIEW (public, no login required) ════════════ -->
+<div id="guestView" class="hidden">
+  <div class="header">
+    <div class="brand">
+      <div class="brand-logo">🏢</div>
+      <div>
+        <div class="brand-name">BDA AOA Expenses</div>
+        <div class="brand-sub">Apartment Owners Association</div>
+      </div>
+    </div>
+    <div class="hright">
+      <button class="btn btn-primary btn-sm" onclick="showLogin()">🔐 Staff Login</button>
+    </div>
+  </div>
+  <div style="max-width:900px;margin:0 auto;padding:28px 20px 60px">
+    <div class="ph"><div class="pt">💰 Cash / Wealth Overview</div><div class="ps">Public view — society-wide cash position, updated live. No login required.</div></div>
+    <div id="gWealth"><div class="spin-wrap"><span class="spin"></span>Loading…</div></div>
+    <div class="card">
+      <div class="ch"><div><div class="ct">Cash Inflow Entries</div><div class="cs">Latest 50 entries</div></div><button class="btn btn-ghost btn-sm" onclick="loadGuestWealth()">🔄 Refresh</button></div>
+      <div id="gInflowList" class="cb"><div class="spin-wrap"><span class="spin"></span>Loading…</div></div>
+    </div>
+    <div style="text-align:center;margin-top:22px">
+      <span style="font-size:12px;color:var(--t3)">Committee members and staff: </span>
+      <button class="btn btn-primary btn-sm" onclick="showLogin()">🔐 Staff Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ MAIN APP ════════════ -->
+<div id="app" class="hidden">
+  <div class="header">
+    <div class="brand">
+      <div class="brand-logo">🏢</div>
+      <div>
+        <div class="brand-name">BDA AOA Expenses</div>
+        <div class="brand-sub">Apartment Owners Association</div>
+      </div>
+    </div>
+    <div class="hright">
+      <div class="role-pill" id="hRole"></div>
+      <div class="avatar" id="hAv"></div>
+      <span style="font-size:13px;font-weight:500" id="hName"></span>
+      <button class="btn btn-ghost btn-sm" onclick="logout()">↩ Sign Out</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="t-dash"      onclick="goTab('dash')">📊 Dashboard</button>
+    <button class="tab"        id="t-submit"    onclick="goTab('submit')">➕ Submit Expense</button>
+    <button class="tab hidden" id="t-cashin"    onclick="goTab('cashin')">💵 Cash Inflow</button>
+    <button class="tab"        id="t-approvals" onclick="goTab('approvals')">✅ Approvals <span class="tbadge" id="pendBadge">0</span></button>
+    <button class="tab"        id="t-history"   onclick="goTab('history')">📋 All Expenses</button>
+    <button class="tab"        id="t-wealth"    onclick="goTab('wealth')">💰 Cash / Wealth</button>
+    <button class="tab"        id="t-users"     onclick="goTab('users')">👥 User Management</button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="v-dash" class="page">
+    <div class="ph"><div class="pt">Dashboard</div><div class="ps">Society expense overview</div></div>
+    <div id="dWealth"></div>
+    <div class="stats">
+      <div class="stat c-blue"><div class="sico">📄</div><div class="slbl">Total Submitted</div><div class="sval" id="sTotal">—</div><div class="snote">All time</div></div>
+      <div class="stat c-or">  <div class="sico">⏳</div><div class="slbl">In Pipeline</div>   <div class="sval" id="sPipe">—</div> <div class="snote">Awaiting approval</div></div>
+      <div class="stat c-gr">  <div class="sico">✅</div><div class="slbl">Fully Approved</div><div class="sval" id="sApp">—</div>  <div class="snote">Completed</div></div>
+      <div class="stat c-pu">  <div class="sico">₹</div> <div class="slbl">Approved Amount</div><div class="sval" id="sAmt">—</div> <div class="snote">Total sanctioned</div></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><div class="ct">Recent Expenses</div><div class="cs" id="dRecentSub">All submissions</div></div><button class="btn btn-ghost btn-sm" onclick="loadDash()">🔄 Refresh</button></div>
+      <div id="dRecent"><div class="spin-wrap"><span class="spin"></span>Loading…</div></div>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div id="v-submit" class="page hidden">
+    <div class="ph"><div class="pt">Submit New Expense</div><div class="ps">Fill details and add recipients — sent to Secretary for verification</div></div>
+    <div class="card">
+      <div class="ch"><div class="ct">Expense Details</div></div>
+      <div class="cb">
+        <div class="fgrid">
+          <div class="fg">
+            <label>Expense Type *</label>
+            <select id="eType">
+              <option value="">— Select type —</option>
+              <option>Stationary</option><option>Plumbing</option><option>Electricity</option>
+              <option>Sanitary &amp; Hardware</option><option>Painting</option><option>Maintenance</option>
+              <option>Security Salary</option><option>Others</option>
+            </select>
+          </div>
+          <div class="fg"><label>Expense Date *</label><input type="date" id="eDate"/></div>
+          <div class="fg"><label>Total Amount (₹) *</label><input type="number" id="eAmt" placeholder="0.00" min="0" step="0.01" readonly style="background:var(--s2);color:var(--t2);cursor:not-allowed"/><div style="font-size:11px;color:var(--t3);margin-top:2px">Auto-calculated from Recipients / Payees below</div></div>
+          <div class="fg"><label>Invoice / Bill No.</label><input type="text" id="eRef" placeholder="INV-2024-001"/></div>
+          <div class="fg full"><label>Description / Remarks</label><textarea id="eDesc" placeholder="Vendor details, purpose, notes…"></textarea></div>
+          <div class="fg full">
+            <div class="rech"><span class="reclbl">📌 Recipients / Payees</span><button class="ibtn ib-add" onclick="addRec()" title="Add">＋</button></div>
+            <div id="recList"></div>
+          </div>
+          <div class="fg full">
+            <div class="rech">
+              <span class="reclbl">🧾 Bill / Invoice Attachments</span>
+              <button class="ibtn ib-add" onclick="document.getElementById('attFileInput').click()" title="Add attachment(s)">＋</button>
+            </div>
+            <input type="file" id="attFileInput" accept="image/*,application/pdf" multiple hidden onchange="handleAttachmentFiles(this.files);this.value='';"/>
+            <div id="attList"></div>
+            <div style="font-size:11px;color:var(--t3);margin-top:2px">Attach one or more photos of the bill/invoice, or a PDF. Tap ＋ again to add more. Images are auto-compressed. Max 10 files, 10MB each.</div>
+          </div>
+        </div>
+        <hr class="divider">
+        <div class="btn-row" style="justify-content:flex-end">
+          <button class="btn btn-ghost" onclick="resetForm()">✕ Clear</button>
+          <button class="btn btn-primary" onclick="submitExp()">📤 Submit to Secretary</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASH INFLOW (Cashier / Treasurer only) -->
+  <div id="v-cashin" class="page hidden">
+    <div class="ph"><div class="pt">💵 Publish Cash Inflow</div><div class="ps">Record cash received — you can publish multiple entries for the same day</div></div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="ch"><div class="ct">New Cash Inflow Entry</div></div>
+      <div class="cb">
+        <div class="fgrid">
+          <div class="fg"><label>Source *</label><input type="text" id="ciSource" placeholder="e.g. Maintenance collection, Donation, Bank interest"/></div>
+          <div class="fg"><label>Date *</label><input type="date" id="ciDate"/></div>
+          <div class="fg"><label>Amount (₹) *</label><input type="number" id="ciAmt" placeholder="0.00" min="0" step="0.01"/></div>
+        </div>
+        <hr class="divider">
+        <div class="btn-row" style="justify-content:flex-end">
+          <button class="btn btn-primary" onclick="submitCashInflow()">📤 Publish Entry</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><div class="ct">Cash Inflow Entries</div><div class="cs">Grouped by date, most recent first</div></div><button class="btn btn-ghost btn-sm" onclick="loadCashInflow()">🔄 Refresh</button></div>
+      <div id="cashinList" class="cb"><div class="spin-wrap"><span class="spin"></span>Loading…</div></div>
+    </div>
+  </div>
+
+  <!-- CASH / WEALTH (visible to all) -->
+  <div id="v-wealth" class="page hidden">
+    <div class="ph"><div class="pt">💰 Cash / Wealth Overview</div><div class="ps">Society-wide cash position — visible to all members</div></div>
+    <div id="wSummary"><div class="spin-wrap"><span class="spin"></span>Loading…</div></div>
+    <div class="card">
+      <div class="ch"><div><div class="ct">Cash Inflow Entries</div><div class="cs">Latest 50 entries</div></div><button class="btn btn-ghost btn-sm" onclick="loadWealth()">🔄 Refresh</button></div>
+      <div id="wInflowList" class="cb"><div class="spin-wrap"><span class="spin"></span>Loading…</div></div>
+    </div>
+  </div>
+
+  <!-- APPROVALS -->
+  <div id="v-approvals" class="page hidden">
+    <div class="ph"><div class="pt" id="apTitle">Approvals</div><div class="ps" id="apSub"></div></div>
+    <div id="apList"><div class="spin-wrap"><span class="spin"></span>Loading…</div></div>
+  </div>
+
+  <!-- HISTORY -->
+  <div id="v-history" class="page hidden">
+    <div class="ph"><div class="pt">All Expenses</div><div class="ps">Complete history with approval trail</div></div>
+    <div class="card">
+      <div class="ch"><div class="ct">Expense Records</div><button class="btn btn-ghost btn-sm" onclick="loadHistory()">🔄 Refresh</button></div>
+      <div id="histContent"><div class="spin-wrap"><span class="spin"></span>Loading…</div></div>
+    </div>
+  </div>
+
+  <!-- USER MANAGEMENT -->
+  <div id="v-users" class="page hidden">
+    <div class="ph"><div class="pt">User Management</div><div class="ps">Create and manage portal accounts</div></div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="ch"><div class="ct">Create New Account</div></div>
+      <div class="cb">
+        <div class="fgrid">
+          <div class="fg"><label>Full Name *</label><input type="text" id="uName" placeholder="Full name"/></div>
+          <div class="fg"><label>Username *</label><input type="text" id="uUser" placeholder="e.g. john_sec"/></div>
+          <div class="fg">
+            <label>Password *</label>
+            <div class="pw-wrap">
+              <input type="password" id="uPass" placeholder="Min 6 characters"/>
+              <button class="pw-eye" onclick="togglePw('uPass',this)">👁</button>
+            </div>
+          </div>
+          <div class="fg">
+            <label>Role *</label>
+            <select id="uRole">
+              <option value="">— Select role —</option>
+              <option value="admin">👨‍💼 Admin</option>
+              <option value="secretary">📋 Secretary</option>
+              <option value="treasurer">💰 Treasurer</option>
+              <option value="president">🏛️ President</option>
+              <option value="cashier">💵 Cashier</option>
+              <option value="guest">👁️ Guest (view-only dashboard)</option>
+            </select>
+          </div>
+        </div>
+        <hr class="divider">
+        <div class="btn-row" style="justify-content:flex-end">
+          <button class="btn btn-primary" onclick="createUser()">➕ Create Account</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><div class="ct">All Accounts</div><div class="cs">Manage existing members</div></div><button class="btn btn-ghost btn-sm" onclick="loadUsers()">🔄 Refresh</button></div>
+      <div id="userList" class="cb"><div class="spin-wrap"><span class="spin"></span>Loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ MODALS ════════ -->
+<!-- Attachment gallery -->
+<div class="overlay" id="attGalleryOverlay">
+  <div class="modal" style="max-width:560px">
+    <div class="mh"><div class="mt2" id="attGalleryTitle">🧾 Attachments</div><button class="xbtn" onclick="closeModal('attGalleryOverlay')">✕</button></div>
+    <div class="mb2"><div class="attgallery" id="attGalleryBody"></div></div>
+  </div>
+</div>
+
+<!-- Fullscreen image lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img id="lightboxImg" alt="Attachment preview"/>
+</div>
+
+<!-- Reject -->
+<div class="overlay" id="rejectOverlay">
+  <div class="modal">
+    <div class="mh"><div class="mt2">❌ Reject &amp; Return to Admin</div><button class="xbtn" onclick="closeModal('rejectOverlay')">✕</button></div>
+    <div class="mb2">
+      <div class="fg"><label>Reason for Rejection *</label><textarea id="rejectReason" placeholder="State clearly what needs to be corrected…" style="min-height:100px"></textarea></div>
+      <div style="margin-top:10px;font-size:12px;color:var(--t3)">⚠️ Returned to Admin with your remarks. Admin must correct and resubmit.</div>
+    </div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal('rejectOverlay')">Cancel</button><button class="btn btn-danger" onclick="doReject()">Reject &amp; Return</button></div>
+  </div>
+</div>
+<!-- Reset Password -->
+<div class="overlay" id="pwOverlay">
+  <div class="modal">
+    <div class="mh"><div class="mt2">🔑 Reset Password</div><button class="xbtn" onclick="closeModal('pwOverlay')">✕</button></div>
+    <div class="mb2">
+      <div style="font-size:13px;color:var(--t2);margin-bottom:14px">Resetting password for: <strong id="pwUserName"></strong></div>
+      <div class="fg">
+        <label>New Password *</label>
+        <div class="pw-wrap">
+          <input type="password" id="newPw" placeholder="Min 6 characters"/>
+          <button class="pw-eye" onclick="togglePw('newPw',this)">👁</button>
+        </div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal('pwOverlay')">Cancel</button><button class="btn btn-warn" onclick="doResetPw()">Reset Password</button></div>
+  </div>
+</div>
+<!-- Delete confirm -->
+<div class="overlay" id="delOverlay">
+  <div class="modal">
+    <div class="mh"><div class="mt2">🗑️ Delete Account</div><button class="xbtn" onclick="closeModal('delOverlay')">✕</button></div>
+    <div class="mb2"><div style="font-size:13px;color:var(--t2)">Are you sure you want to delete <strong id="delUserName"></strong>? This cannot be undone.</div></div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeModal('delOverlay')">Cancel</button><button class="btn btn-danger" onclick="doDelete()">Delete Account</button></div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+// ── State ──────────────────────────────────────
+let DB='',TOK='',SESSION=null;
+
+// Preconfigured default database — the app auto-connects with these on
+// load so it never blocks on the setup screen. Session storage (if a
+// different DB was connected before) still takes priority.
+const DEFAULT_DB_URL='https://advexpensetracker-jagsaam7.aws-ap-south-1.turso.io';
+const DEFAULT_DB_TOKEN='eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3ODU4MzM5ODgsImlkIjoiMDE5ZmNjMDAtMDkwMS03MTRhLWE5ZWYtM2VmYjU4NTUzM2FmIiwia2lkIjoiTVgwNUM3d2czMllVdVJTblR2dHBtczlrRXRhbXlVRWpZTzZYRl9UMFRSSSIsInJpZCI6IjliMWNjZjc5LTVlN2MtNGU5Yi04MDYwLTY3MjQ4ODQ3ZjBlYyJ9.HdVWole7u3lZOQQ2_WhSJkMwt1_UUWn1LYPiN5GeBCNxQxGJKR_wUF9YM-bZ_dLZ6G0EFrJto1Pm6TubIy4vAQ';
+let rejectingId=null, resetUserId=null, deleteUserId=null, recIdx=0;
+let attachments=[], attIdx=0; // pending attachments on the Submit form: {id,name,type,size,dataUrl}
+const ROLE_STATUS={secretary:'pending_secretary',treasurer:'pending_treasurer',president:'pending_president'};
+const ROLE_NEXT  ={secretary:'pending_treasurer',treasurer:'pending_pending_president',president:'approved'};
+// correct next map
+const NEXT_STATUS={secretary:'pending_treasurer',treasurer:'pending_president',president:'approved'};
+const ROLE_META={
+  admin:    {label:'Admin',    icon:'👨‍💼',pill:'#E0EDFF',pillTx:'#1A56DB',avBg:'linear-gradient(135deg,#1A56DB,#1344B8)'},
+  secretary:{label:'Secretary',icon:'📋',pill:'#FEF9C3',pillTx:'#92400E',avBg:'linear-gradient(135deg,#D97706,#B45309)'},
+  treasurer:{label:'Treasurer',icon:'💰',pill:'#CFFAFE',pillTx:'#0891B2',avBg:'linear-gradient(135deg,#0891B2,#0E7490)'},
+  president:{label:'President',icon:'🏛️',pill:'#EDE9FE',pillTx:'#6D28D9',avBg:'linear-gradient(135deg,#6D28D9,#5B21B6)'},
+  cashier:  {label:'Cashier',  icon:'💵',pill:'#D6F5E7',pillTx:'#0D9F5A',avBg:'linear-gradient(135deg,#0D9F5A,#0A8A4D)'},
+  guest:    {label:'Guest',    icon:'👁️',pill:'#E5E7EB',pillTx:'#374151',avBg:'linear-gradient(135deg,#6B7280,#4B5563)'},
+};
+const CASH_ROLES=['cashier','treasurer'];
+const APPROVAL_ROLES=['secretary','treasurer','president'];
+
+// ── Turso ──────────────────────────────────────
+async function turso(sql,args=[]){
+  const r=await fetch(`${DB}/v2/pipeline`,{
+    method:'POST',
+    headers:{'Authorization':`Bearer ${TOK}`,'Content-Type':'application/json'},
+    body:JSON.stringify({requests:[{type:'execute',stmt:{sql,args:args.map(tv)}},{type:'close'}]})
+  });
+  if(!r.ok) throw new Error(`HTTP ${r.status}: ${await r.text()}`);
+  const d=await r.json();
+  const res=d.results[0];
+  if(res.type==='error') throw new Error(res.error.message);
+  return res.response.result;
+}
+function tv(v){if(v==null)return{type:'null'};if(typeof v==='number')return{type:'integer',value:String(v)};return{type:'text',value:String(v)};}
+function rows(r){if(!r?.rows)return[];return r.rows.map(row=>Object.fromEntries(r.cols.map((c,i)=>[c.name,row[i]?.value??null])));}
+
+// ── Hash ───────────────────────────────────────
+async function sha256(msg){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(msg));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// ── Schema ─────────────────────────────────────
+// Runs every time someone clicks "Connect Database" on the setup screen.
+// All statements are safe to re-run: CREATE ... IF NOT EXISTS for new
+// installs, and a PRAGMA-driven check before ALTER TABLE so it never fails
+// against a DB that already has some of these columns.
+async function initDB(){
+  await turso(`CREATE TABLE IF NOT EXISTS users(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    username TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    role TEXT NOT NULL,
+    active INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now'))
+  )`);
+  await turso(`CREATE TABLE IF NOT EXISTS expenses(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    type TEXT NOT NULL,amount REAL NOT NULL,date TEXT NOT NULL,ref TEXT,description TEXT,
+    submitted_by TEXT NOT NULL,status TEXT DEFAULT 'pending_secretary',
+    sec_action TEXT,sec_remark TEXT,trs_action TEXT,trs_remark TEXT,prs_action TEXT,prs_remark TEXT,
+    rejected_by TEXT,created_at TEXT DEFAULT (datetime('now')),updated_at TEXT DEFAULT (datetime('now'))
+  )`);
+  await turso(`CREATE TABLE IF NOT EXISTS recipients(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,expense_id INTEGER NOT NULL,
+    name TEXT NOT NULL,amount REAL NOT NULL,pinned INTEGER DEFAULT 0
+  )`);
+
+  // Workflow reference table — drives the step-number cards on the setup
+  // screen and any "which role is next" logic, instead of hardcoding it in JS.
+  await turso(`CREATE TABLE IF NOT EXISTS workflow_steps(
+    step TEXT PRIMARY KEY,
+    step_order INTEGER NOT NULL,
+    label TEXT NOT NULL,
+    responsibility TEXT NOT NULL
+  )`);
+  await turso(`INSERT OR IGNORE INTO workflow_steps(step,step_order,label,responsibility) VALUES
+    ('admin',0,'Admin','Creates & submits the expense bill'),
+    ('secretary',1,'Secretary','Verifies documents & supporting bills'),
+    ('treasurer',2,'Treasurer','Confirms budget availability & financial correctness'),
+    ('president',3,'President','Gives final approval')`);
+
+  // Append-only approval trail — one row per Approve/Reject click. Survives
+  // resubmission rounds so history is never lost, even when a rejected
+  // expense is corrected and resubmitted as a fresh row.
+  await turso(`CREATE TABLE IF NOT EXISTS expense_approvals(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    expense_id INTEGER NOT NULL,
+    round INTEGER NOT NULL DEFAULT 1,
+    step TEXT NOT NULL,
+    action TEXT NOT NULL,
+    actor_user_id INTEGER,
+    actor_name TEXT NOT NULL,
+    remark TEXT,
+    acted_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`);
+
+  // Bill/invoice attachments — one or many per expense. Images are
+  // compressed client-side before upload; data_url stores the full
+  // "data:<mime>;base64,..." string so the frontend can render it directly.
+  await turso(`CREATE TABLE IF NOT EXISTS expense_attachments(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    expense_id INTEGER NOT NULL,
+    file_name TEXT NOT NULL,
+    mime_type TEXT NOT NULL,
+    file_size INTEGER,
+    data_url TEXT NOT NULL,
+    uploaded_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`);
+
+  // Migrate `expenses` in place — add resubmission-tracking columns only if
+  // they're missing (existing DBs won't have them yet; fresh ones will
+  // already match after the CREATE TABLE above, so nothing happens).
+  const cols=rows(await turso(`PRAGMA table_info(expenses)`)).map(c=>c.name);
+  const wanted={
+    submitted_by_id:'INTEGER',
+    submission_round:'INTEGER NOT NULL DEFAULT 1',
+    resubmission_of:'INTEGER',
+    sec_by:'TEXT', sec_at:'TEXT',
+    trs_by:'TEXT', trs_at:'TEXT',
+    prs_by:'TEXT', prs_at:'TEXT',
+    rejected_at:'TEXT'
+  };
+  for(const[col,def] of Object.entries(wanted)){
+    if(!cols.includes(col)) await turso(`ALTER TABLE expenses ADD COLUMN ${col} ${def}`);
+  }
+
+  // Cash inflow ledger — published by Cashier/Treasurer only. Multiple
+  // entries per day are expected; totals are aggregated on read, not
+  // stored, so there's nothing to keep in sync.
+  await turso(`CREATE TABLE IF NOT EXISTS cash_inflows(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    source TEXT NOT NULL,
+    date TEXT NOT NULL,
+    amount REAL NOT NULL,
+    added_by TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`);
+
+  // Indexes — safe to re-run every connect.
+  await turso(`CREATE INDEX IF NOT EXISTS idx_cash_inflows_date ON cash_inflows(date)`);
+  await turso(`CREATE INDEX IF NOT EXISTS idx_expenses_status ON expenses(status)`);
+  await turso(`CREATE INDEX IF NOT EXISTS idx_expenses_resubmission ON expenses(resubmission_of)`);
+  await turso(`CREATE INDEX IF NOT EXISTS idx_approvals_expense_round ON expense_approvals(expense_id, round)`);
+  await turso(`CREATE INDEX IF NOT EXISTS idx_recipients_expense ON recipients(expense_id)`);
+  await turso(`CREATE INDEX IF NOT EXISTS idx_attachments_expense ON expense_attachments(expense_id)`);
+
+  // seed super-admin if no users
+  const existing=rows(await turso(`SELECT id FROM users LIMIT 1`));
+  if(!existing.length){
+    const h=await sha256('admin123');
+    await turso(`INSERT INTO users(name,username,password_hash,role) VALUES(?,?,?,?)`,['Super Admin','admin',h,'admin']);
+  }
+}
+
+// ── DB Connect ─────────────────────────────────
+async function connectDB(){
+  const url=document.getElementById('cfgUrl').value.trim();
+  const tok=document.getElementById('cfgToken').value.trim();
+  const err=document.getElementById('dbErr');
+  err.style.display='none';
+  if(!url||!tok){err.textContent='Enter both URL and Token.';err.style.display='block';return;}
+  DB=url.replace(/\/$/,''); TOK=tok;
+  try{
+    await initDB();
+    // Persist to sessionStorage so page refresh doesn't lose config
+    sessionStorage.setItem('bda_db',DB);
+    sessionStorage.setItem('bda_tok',TOK);
+    showGuestView();
+  }catch(e){err.textContent='Connection failed: '+e.message;err.style.display='block';}
+}
+
+function showLogin(){
+  document.getElementById('dbSetup').classList.add('hidden');
+  document.getElementById('guestView').classList.add('hidden');
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('lgUser').value='';
+  document.getElementById('lgPass').value='';
+  document.getElementById('lgErr').style.display='none';
+}
+
+function showGuestView(){
+  document.getElementById('dbSetup').classList.add('hidden');
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('guestView').classList.remove('hidden');
+  loadGuestWealth();
+}
+
+// ── Login ──────────────────────────────────────
+async function doLogin(){
+  const u=document.getElementById('lgUser').value.trim();
+  const p=document.getElementById('lgPass').value;
+  const err=document.getElementById('lgErr');
+  err.style.display='none';
+  if(!u||!p){err.textContent='Enter username and password.';err.style.display='block';return;}
+  try{
+    const h=await sha256(p);
+    const result=rows(await turso(`SELECT * FROM users WHERE username=? AND password_hash=? AND active=1`,[u,h]));
+    if(!result.length){err.textContent='Invalid username or password.';err.style.display='block';return;}
+    SESSION=result[0];
+    launchApp();
+  }catch(e){err.textContent='Error: '+e.message;err.style.display='block';}
+}
+
+function logout(){
+  SESSION=null;
+  document.getElementById('app').classList.add('hidden');
+  showGuestView();
+}
+
+// ── Launch ─────────────────────────────────────
+function launchApp(){
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('guestView').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  const m=ROLE_META[SESSION.role];
+  const pill=document.getElementById('hRole');
+  pill.textContent=m.icon+' '+m.label;
+  pill.style.background=m.pill; pill.style.color=m.pillTx;
+  document.getElementById('hName').textContent=SESSION.name;
+  const av=document.getElementById('hAv');
+  av.textContent=SESSION.name[0].toUpperCase();
+  av.style.background=m.avBg;
+
+  const isAdmin=SESSION.role==='admin';
+  const isGuest=SESSION.role==='guest';
+  const isSuperAdmin=SESSION.username==='admin'||isAdmin;
+  const isApprover=APPROVAL_ROLES.includes(SESSION.role);
+  const isCashRole=CASH_ROLES.includes(SESSION.role);
+  // Guest is view-only: Dashboard is the only tab it ever gets, no matter
+  // what the other role checks above would otherwise allow.
+  document.getElementById('t-submit').classList.toggle('hidden',!isAdmin||isGuest);
+  document.getElementById('t-cashin').classList.toggle('hidden',!isCashRole||isGuest);
+  document.getElementById('t-approvals').classList.toggle('hidden',!isApprover||isGuest);
+  document.getElementById('t-users').classList.toggle('hidden',!isSuperAdmin||isGuest);
+  document.getElementById('t-history').classList.toggle('hidden',isGuest);
+  document.getElementById('t-wealth').classList.toggle('hidden',isGuest);
+
+  const labels={secretary:'Secretary — Verify bills & documents',treasurer:'Treasurer — Confirm budget & finances',president:'President — Final approval'};
+  document.getElementById('apTitle').textContent=m.icon+' '+m.label+' Approvals';
+  document.getElementById('apSub').textContent=labels[SESSION.role]||'';
+
+  document.getElementById('eDate').value=new Date().toISOString().split('T')[0];
+  const ciDate=document.getElementById('ciDate'); if(ciDate) ciDate.value=new Date().toISOString().split('T')[0];
+  resetForm();
+  // Admin lands on the full Dashboard; Guest always lands on (and stays on)
+  // Dashboard too, since it's the only tab available; every other role
+  // defaults to the Cash/Wealth view since that's the summary most
+  // relevant to them.
+  goTab(isAdmin||isGuest?'dash':'wealth');
+}
+
+// ── Tabs ───────────────────────────────────────
+function goTab(t){
+  if(SESSION?.role==='guest') t='dash'; // guest is view-only: Dashboard, always
+  ['dash','submit','cashin','approvals','history','wealth','users'].forEach(x=>{
+    document.getElementById(`t-${x}`)?.classList.toggle('active',x===t);
+    document.getElementById(`v-${x}`)?.classList.toggle('hidden',x!==t);
+  });
+  if(t==='dash')      loadDash();
+  if(t==='cashin')    loadCashInflow();
+  if(t==='approvals') loadApprovals();
+  if(t==='history')   loadHistory();
+  if(t==='wealth')    loadWealth();
+  if(t==='users')     loadUsers();
+}
+
+// ── Recipients ─────────────────────────────────
+function addRec(name='',amt='',pinned=false){
+  const id=++recIdx;
+  const d=document.createElement('div');
+  d.className='recrow'; d.id=`rr-${id}`;
+  d.innerHTML=`
+    <input type="text" placeholder="Recipient / Payee name" value="${name}" id="rn-${id}"/>
+    <input type="number" placeholder="Amount ₹" value="${amt}" min="0" step="0.01" id="ra-${id}" oninput="updateTotalAmount()"/>
+    <button class="ibtn ib-pin${pinned?' on':''}" id="rp-${id}" onclick="tPin(${id})" title="Pin">📌</button>
+    <button class="ibtn ib-del" onclick="delRec(${id})" title="Remove">✕</button>`;
+  document.getElementById('recList').appendChild(d);
+}
+function tPin(id){document.getElementById(`rp-${id}`)?.classList.toggle('on');}
+function delRec(id){document.getElementById(`rr-${id}`)?.remove();updateTotalAmount();}
+function updateTotalAmount(){
+  const total=Array.from(document.querySelectorAll('.recrow')).reduce((s,r)=>{
+    const id=r.id.replace('rr-','');
+    return s+(parseFloat(document.getElementById(`ra-${id}`)?.value)||0);
+  },0);
+  const el=document.getElementById('eAmt');
+  if(el) el.value=total?total.toFixed(2):'';
+}
+function getRecs(){
+  return Array.from(document.querySelectorAll('.recrow')).map(r=>{
+    const id=r.id.replace('rr-','');
+    return{name:document.getElementById(`rn-${id}`)?.value?.trim()||'',
+           amount:parseFloat(document.getElementById(`ra-${id}`)?.value)||0,
+           pinned:document.getElementById(`rp-${id}`)?.classList.contains('on')?1:0};
+  }).filter(r=>r.name);
+}
+
+// ── Attachments (Submit form) ───────────────────
+// Each ＋ tap (or drag/multi-select) can add one or many files; images get
+// auto-compressed client-side before being turned into a data URL so the
+// DB row stays small. PDFs are stored as-is.
+const ATT_MAX_FILES=10, ATT_MAX_BYTES=10*1024*1024;
+
+async function handleAttachmentFiles(fileList){
+  for(const file of Array.from(fileList)){
+    if(attachments.length>=ATT_MAX_FILES){ toast(`Max ${ATT_MAX_FILES} attachments per expense.`,'err'); break; }
+    try{ attachments.push(await processAttachmentFile(file)); }
+    catch(err){ toast(`${file.name}: ${err.message}`,'err'); }
+  }
+  renderAttachments();
+}
+function processAttachmentFile(file){
+  return new Promise((resolve,reject)=>{
+    const isImage=file.type.startsWith('image/'), isPdf=file.type==='application/pdf';
+    if(!isImage&&!isPdf) return reject(new Error('Only images or PDF files are allowed'));
+    if(file.size>ATT_MAX_BYTES) return reject(new Error('File exceeds 10MB'));
+    if(!isImage){ // PDF — read as-is
+      const r=new FileReader();
+      r.onload=()=>resolve({id:++attIdx,name:file.name,type:file.type,size:file.size,dataUrl:r.result});
+      r.onerror=()=>reject(new Error('Could not read file'));
+      r.readAsDataURL(file);
+      return;
+    }
+    // Image — downscale to max 1600px edge + JPEG @72% to keep the row small
+    const url=URL.createObjectURL(file), img=new Image();
+    img.onload=()=>{
+      let{width,height}=img; const maxDim=1600;
+      if(width>maxDim||height>maxDim){ const s=maxDim/Math.max(width,height); width=Math.round(width*s); height=Math.round(height*s); }
+      const cv=document.createElement('canvas'); cv.width=width; cv.height=height;
+      cv.getContext('2d').drawImage(img,0,0,width,height);
+      URL.revokeObjectURL(url);
+      const dataUrl=cv.toDataURL('image/jpeg',0.72);
+      resolve({id:++attIdx,name:file.name,type:'image/jpeg',size:Math.round(dataUrl.length*0.75),dataUrl});
+    };
+    img.onerror=()=>{ URL.revokeObjectURL(url); reject(new Error('Could not read image')); };
+    img.src=url;
+  });
+}
+function delAttachment(id){ attachments=attachments.filter(a=>a.id!==id); renderAttachments(); }
+function renderAttachments(){
+  const wrap=document.getElementById('attList');
+  wrap.innerHTML=attachments.map(a=>`
+    <div class="attrow" id="ar-${a.id}">
+      ${a.type==='application/pdf'
+        ?`<div class="attthumb attpdf" onclick="openLightbox('${escAttr(a.dataUrl)}','${escAttr(a.name)}',true)">📄</div>`
+        :`<img class="attthumb" src="${a.dataUrl}" onclick="openLightbox('${escAttr(a.dataUrl)}','${escAttr(a.name)}',false)"/>`}
+      <div class="attinfo"><div class="attname">${esc(a.name)}</div><div class="attsize">${fmtBytes(a.size)}</div></div>
+      <button class="ibtn ib-del" onclick="delAttachment(${a.id})" title="Remove">✕</button>
+    </div>`).join('');
+}
+function fmtBytes(b){ if(b<1024) return b+' B'; if(b<1024*1024) return (b/1024).toFixed(0)+' KB'; return (b/1024/1024).toFixed(1)+' MB'; }
+function esc(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escAttr(s){ return esc(s).replace(/`/g,'&#96;'); }
+
+// ── Lightbox / gallery viewer (used on Submit form + Approvals + History) ──
+function openLightbox(dataUrl,name,isPdf){
+  if(isPdf){
+    const w=window.open(); if(!w) return toast('Allow pop-ups to view the PDF.','err');
+    w.document.write(`<title>${esc(name)}</title><body style="margin:0"><embed src="${dataUrl}" type="application/pdf" style="width:100%;height:100vh;border:none"/></body>`);
+    return;
+  }
+  document.getElementById('lightboxImg').src=dataUrl;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox(){ document.getElementById('lightbox').classList.remove('open'); document.getElementById('lightboxImg').src=''; }
+function openAttachmentGallery(title,atts){
+  document.getElementById('attGalleryTitle').textContent=title;
+  document.getElementById('attGalleryBody').innerHTML=atts.map(a=>{
+    const isPdf=a.mime_type==='application/pdf';
+    return `<div class="attgitem">
+      ${isPdf?`<div class="attpdf" onclick="openLightbox('${escAttr(a.data_url)}','${escAttr(a.file_name)}',true)">📄</div>`
+             :`<img src="${a.data_url}" onclick="openLightbox('${escAttr(a.data_url)}','${escAttr(a.file_name)}',false)"/>`}
+      <div class="attgname">${esc(a.file_name)}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('attGalleryOverlay').classList.add('open');
+}
+async function viewExpenseAttachments(id,label){
+  try{
+    const atts=rows(await turso(`SELECT file_name,mime_type,data_url FROM expense_attachments WHERE expense_id=? ORDER BY id`,[id]));
+    if(!atts.length) return toast('No attachments for this expense.','err');
+    openAttachmentGallery(`🧾 Attachments — ${label}`,atts);
+  }catch(e){ toast('Error: '+e.message,'err'); }
+}
+
+// ── Submit Expense ─────────────────────────────
+async function submitExp(){
+  const type=document.getElementById('eType').value;
+  const date=document.getElementById('eDate').value;
+  const amt=parseFloat(document.getElementById('eAmt').value);
+  const ref=document.getElementById('eRef').value.trim();
+  const desc=document.getElementById('eDesc').value.trim();
+  if(!type||!date||!amt) return toast('Fill all required fields.','err');
+  const recs=getRecs();
+  if(!recs.length) return toast('Add at least one recipient.','err');
+  try{
+    const res=await turso(`INSERT INTO expenses(type,amount,date,ref,description,submitted_by,status) VALUES(?,?,?,?,?,?,?)`,
+      [type,amt,date,ref||null,desc||null,SESSION.name,'pending_secretary']);
+    const eid=res.last_insert_rowid;
+    for(const r of recs) await turso(`INSERT INTO recipients(expense_id,name,amount,pinned) VALUES(?,?,?,?)`,[eid,r.name,r.amount,r.pinned]);
+    for(const a of attachments) await turso(`INSERT INTO expense_attachments(expense_id,file_name,mime_type,file_size,data_url) VALUES(?,?,?,?,?)`,[eid,a.name,a.type,a.size,a.dataUrl]);
+    toast('Expense submitted! Sent to Secretary.','ok');
+    resetForm(); loadDash();
+  }catch(e){toast('Error: '+e.message,'err');}
+}
+function resetForm(){
+  ['eType','eRef','eDesc'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  const am=document.getElementById('eAmt'); if(am) am.value='';
+  const dt=document.getElementById('eDate'); if(dt) dt.value=new Date().toISOString().split('T')[0];
+  document.getElementById('recList').innerHTML=''; recIdx=0; addRec();
+  updateTotalAmount();
+  attachments=[]; attIdx=0; renderAttachments();
+}
+
+// ── Cash / Wealth ────────────────────────────────
+async function getWealthSummary(){
+  const inRes=rows(await turso(`SELECT COALESCE(SUM(amount),0) t FROM cash_inflows`));
+  const outRes=rows(await turso(`SELECT COALESCE(SUM(amount),0) t FROM expenses WHERE status='approved'`));
+  const totalIn=parseFloat(inRes[0]?.t||0), totalOut=parseFloat(outRes[0]?.t||0);
+  return{totalIn,totalOut,balance:totalIn-totalOut};
+}
+async function renderWealthWidget(elId){
+  const el=document.getElementById(elId); if(!el) return;
+  try{
+    const w=await getWealthSummary();
+    el.innerHTML=`<div class="wealth-row">
+      <div class="wealth-item wealth-in"><div class="wealth-av">💵</div><div><div class="wealth-lbl">Cash Inflow</div><div class="wealth-val">₹${w.totalIn.toLocaleString('en-IN',{maximumFractionDigits:0})}</div></div></div>
+      <div class="wealth-item wealth-out"><div class="wealth-av">📤</div><div><div class="wealth-lbl">Cash Outflow (Expenses)</div><div class="wealth-val">₹${w.totalOut.toLocaleString('en-IN',{maximumFractionDigits:0})}</div></div></div>
+      <div class="wealth-item wealth-net"><div class="wealth-av">💎</div><div><div class="wealth-lbl">Wealth (Balance)</div><div class="wealth-val">₹${w.balance.toLocaleString('en-IN',{maximumFractionDigits:0})}</div></div></div>
+    </div>`;
+  }catch(e){el.innerHTML=`<div class="empty"><p style="color:var(--red)">Error: ${e.message}</p></div>`;}
+}
+
+async function submitCashInflow(){
+  const source=document.getElementById('ciSource').value.trim();
+  const date=document.getElementById('ciDate').value;
+  const amt=parseFloat(document.getElementById('ciAmt').value);
+  if(!source||!date||!amt) return toast('Fill all fields.','err');
+  try{
+    await turso(`INSERT INTO cash_inflows(source,date,amount,added_by) VALUES(?,?,?,?)`,[source,date,amt,SESSION.name]);
+    toast('Cash inflow published!','ok');
+    document.getElementById('ciSource').value='';
+    document.getElementById('ciAmt').value='';
+    // date is left as-is so multiple entries for the same day are quick to add
+    loadCashInflow();
+  }catch(e){toast('Error: '+e.message,'err');}
+}
+
+async function loadCashInflow(){
+  const c=document.getElementById('cashinList'); if(!c) return;
+  c.innerHTML=`<div class="spin-wrap"><span class="spin"></span>Loading…</div>`;
+  try{
+    const list=rows(await turso(`SELECT * FROM cash_inflows ORDER BY date DESC, created_at DESC`));
+    if(!list.length){c.innerHTML=`<div class="empty"><div class="eico">📭</div><p>No cash inflow entries yet.</p></div>`;return;}
+    const byDate={};
+    list.forEach(r=>{(byDate[r.date]=byDate[r.date]||[]).push(r);});
+    const dates=Object.keys(byDate).sort((a,b)=>b.localeCompare(a));
+    c.innerHTML=dates.map(d=>{
+      const entries=byDate[d];
+      const dayTotal=entries.reduce((s,r)=>s+parseFloat(r.amount),0);
+      return `<div class="daygrp">
+        <div class="daygrp-h"><strong style="font-size:13px">${fd(d)}</strong><span style="font-size:13px;font-weight:700;color:var(--green)">Day Total: ₹${dayTotal.toLocaleString('en-IN')}</span></div>
+        <div class="twrap"><table>
+          <thead><tr><th>Source</th><th>Amount</th><th>Added By</th><th></th></tr></thead>
+          <tbody>${entries.map(r=>`<tr>
+            <td>${esc(r.source)}</td><td class="amt">₹${parseFloat(r.amount).toLocaleString('en-IN')}</td>
+            <td style="color:var(--t3)">${esc(r.added_by)}</td>
+            <td style="text-align:right"><button class="btn btn-danger btn-xs" onclick="delCashInflow(${r.id})">✕</button></td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </div>`;
+    }).join('');
+  }catch(e){c.innerHTML=`<div class="empty"><p style="color:var(--red)">Error: ${e.message}</p></div>`;}
+}
+
+async function delCashInflow(id){
+  if(!confirm('Delete this cash inflow entry?')) return;
+  try{ await turso(`DELETE FROM cash_inflows WHERE id=?`,[id]); toast('Entry deleted.','ok'); loadCashInflow(); }
+  catch(e){ toast('Error: '+e.message,'err'); }
+}
+
+async function loadCashInflowTable(elId,limit){
+  const c=document.getElementById(elId); if(!c) return;
+  c.innerHTML=`<div class="spin-wrap"><span class="spin"></span>Loading…</div>`;
+  try{
+    const list=rows(await turso(`SELECT * FROM cash_inflows ORDER BY date DESC, created_at DESC${limit?` LIMIT ${limit}`:''}`));
+    if(!list.length){c.innerHTML=`<div class="empty"><div class="eico">📭</div><p>No cash inflow entries yet.</p></div>`;return;}
+    c.innerHTML=`<div class="twrap"><table>
+      <thead><tr><th>Date</th><th>Source</th><th>Amount</th><th>Added By</th></tr></thead>
+      <tbody>${list.map(r=>`<tr><td>${fd(r.date)}</td><td>${esc(r.source)}</td><td class="amt">₹${parseFloat(r.amount).toLocaleString('en-IN')}</td><td style="color:var(--t3)">${esc(r.added_by)}</td></tr>`).join('')}</tbody>
+    </table></div>`;
+  }catch(e){c.innerHTML=`<div class="empty"><p style="color:var(--red)">Error: ${e.message}</p></div>`;}
+}
+async function loadWealth(){
+  renderWealthWidget('wSummary');
+  loadCashInflowTable('wInflowList',50);
+}
+async function loadGuestWealth(){
+  renderWealthWidget('gWealth');
+  loadCashInflowTable('gInflowList',50);
+}
+
+// ── Dashboard ──────────────────────────────────
+let dashExpensesCache=[], dashPage=1;
+const DASH_PAGE_SIZE=15;
+
+async function loadDash(){
+  renderWealthWidget('dWealth');
+  try{
+    const all=rows(await turso(`SELECT * FROM expenses ORDER BY created_at DESC`));
+    dashExpensesCache=all;
+    const pipe=all.filter(e=>!['approved','rejected'].includes(e.status));
+    const done=all.filter(e=>e.status==='approved');
+    const amt=done.reduce((s,e)=>s+parseFloat(e.amount||0),0);
+    document.getElementById('sTotal').textContent=all.length;
+    document.getElementById('sPipe').textContent=pipe.length;
+    document.getElementById('sApp').textContent=done.length;
+    document.getElementById('sAmt').textContent='₹'+amt.toLocaleString('en-IN',{maximumFractionDigits:0});
+    const myPend=ROLE_STATUS[SESSION.role]?all.filter(e=>e.status===ROLE_STATUS[SESSION.role]).length:0;
+    document.getElementById('pendBadge').textContent=myPend;
+    dashPage=1;
+    renderDashTable();
+  }catch(e){document.getElementById('dRecent').innerHTML=`<div class="empty"><p style="color:var(--red)">Error: ${e.message}</p></div>`;}
+}
+
+function renderDashTable(){
+  const all=dashExpensesCache;
+  if(!all.length){document.getElementById('dRecent').innerHTML=`<div class="empty"><div class="eico">📭</div><p>No expenses yet.</p></div>`;document.getElementById('dRecentSub').textContent='All submissions';return;}
+  const totalPages=Math.max(1,Math.ceil(all.length/DASH_PAGE_SIZE));
+  dashPage=Math.min(Math.max(1,dashPage),totalPages);
+  const start=(dashPage-1)*DASH_PAGE_SIZE;
+  const pageItems=all.slice(start,start+DASH_PAGE_SIZE);
+  document.getElementById('dRecentSub').textContent=`${all.length} total · page ${dashPage} of ${totalPages}`;
+  document.getElementById('dRecent').innerHTML=`<div class="twrap"><table>
+    <thead><tr><th>#</th><th>Type</th><th>Date</th><th>Amount</th><th>By</th><th>Status</th><th>Pipeline</th></tr></thead>
+    <tbody>${pageItems.map(e=>`<tr>
+      <td style="color:var(--t3)">#${e.id}</td>
+      <td><strong>${e.type}</strong>${e.ref?`<br><small style="color:var(--t3)">${e.ref}</small>`:''}</td>
+      <td>${fd(e.date)}</td><td class="amt">₹${parseFloat(e.amount).toLocaleString('en-IN')}</td>
+      <td>${e.submitted_by}</td><td>${sbadge(e.status)}</td><td>${wf(e)}</td>
+    </tr>`).join('')}</tbody></table></div>
+    <div class="dpager">
+      <button class="btn btn-ghost btn-sm" onclick="dashGoPage(-1)" ${dashPage<=1?'disabled':''}>‹ Prev</button>
+      <span class="dpage-label">Page ${dashPage} of ${totalPages}</span>
+      <button class="btn btn-ghost btn-sm" onclick="dashGoPage(1)" ${dashPage>=totalPages?'disabled':''}>Next ›</button>
+    </div>`;
+}
+function dashGoPage(delta){ dashPage+=delta; renderDashTable(); }
+
+// ── Approvals ──────────────────────────────────
+async function loadApprovals(){
+  const c=document.getElementById('apList');
+  if(SESSION.role==='admin'){c.innerHTML=`<div class="empty"><div class="eico">🔒</div><p>Admins submit expenses. Approvals are for Secretary, Treasurer &amp; President.</p></div>`;return;}
+  c.innerHTML=`<div class="spin-wrap"><span class="spin"></span>Loading…</div>`;
+  try{
+    const myStatus=ROLE_STATUS[SESSION.role];
+    const list=rows(await turso(`SELECT * FROM expenses WHERE status=? ORDER BY created_at ASC`,[myStatus]));
+    document.getElementById('pendBadge').textContent=list.length;
+    if(!list.length){c.innerHTML=`<div class="empty"><div class="eico">🎉</div><p>All caught up! No pending expenses.</p></div>`;return;}
+    const cards=await Promise.all(list.map(async e=>{
+      const recs=rows(await turso(`SELECT * FROM recipients WHERE expense_id=?`,[e.id]));
+      const atts=rows(await turso(`SELECT id,file_name,mime_type,data_url FROM expense_attachments WHERE expense_id=?`,[e.id]));
+      return{...e,recs,atts};
+    }));
+    c.innerHTML=cards.map(renderCard).join('');
+  }catch(e){c.innerHTML=`<div class="empty"><p style="color:var(--red)">Error: ${e.message}</p></div>`;}
+}
+
+function renderCard(e){
+  const chips=(e.recs||[]).map(r=>`<span class="chip${r.pinned=='1'||r.pinned===1?' pinned':''}">
+    ${r.pinned=='1'||r.pinned===1?'<span style="font-size:10px">📌</span>':''}${r.name} — ₹${parseFloat(r.amount).toLocaleString('en-IN')}
+  </span>`).join('');
+  const attChips=(e.atts||[]).map(a=>{
+    const isPdf=a.mime_type==='application/pdf';
+    return `<span class="attchip" onclick="openLightbox('${escAttr(a.data_url)}','${escAttr(a.file_name)}',${isPdf})">
+      ${isPdf?'<span class="attpdf-ico">📄</span>':`<img src="${a.data_url}"/>`}${esc(a.file_name)}
+    </span>`;
+  }).join('');
+  let trail='';
+  if(e.sec_action) trail+=`<div class="tri"><span class="trole">📋 Secretary</span><span style="color:${e.sec_action==='approved'?'var(--green)':'var(--red)'}">${e.sec_action==='approved'?'✓ Verified':'✕ Returned'}${e.sec_remark?` — <em>${e.sec_remark}</em>`:''}</span></div>`;
+  if(e.trs_action) trail+=`<div class="tri"><span class="trole">💰 Treasurer</span><span style="color:${e.trs_action==='approved'?'var(--green)':'var(--red)'}">${e.trs_action==='approved'?'✓ Confirmed':'✕ Returned'}${e.trs_remark?` — <em>${e.trs_remark}</em>`:''}</span></div>`;
+  return `<div class="ecard" id="ec-${e.id}">
+    <div class="ect">
+      <div><div class="ectype">${e.type}</div><div class="ecref">By ${e.submitted_by}${e.ref?' · '+e.ref:''} · ${fd(e.date)}</div></div>
+      <div style="text-align:right"><div class="ecamt">₹${parseFloat(e.amount).toLocaleString('en-IN')}</div>${sbadge(e.status)}</div>
+    </div>
+    <div class="ecb">
+      <div class="emeta">
+        ${e.description?`<div><div class="emv">${e.description}</div><div class="emk">Remarks</div></div>`:''}
+        ${e.ref?`<div><div class="emv">${e.ref}</div><div class="emk">Invoice No.</div></div>`:''}
+      </div>
+      ${chips?`<div><div style="font-size:11px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Recipients</div><div class="chips">${chips}</div></div>`:''}
+      ${attChips?`<div><div style="font-size:11px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Bill Attachments</div><div class="attchips">${attChips}</div></div>`:''}
+      ${trail?`<div class="trail mt12">${trail}</div>`:''}
+      <div class="mt12">${wf(e)}</div>
+      <hr class="divider">
+      <div class="btn-row">
+        <button class="btn btn-success btn-sm" onclick="doApprove(${e.id})">✅ Approve &amp; Forward</button>
+        <button class="btn btn-danger btn-sm" onclick="openReject(${e.id})">❌ Reject &amp; Return to Admin</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function doApprove(id){
+  const next=NEXT_STATUS[SESSION.role];
+  const field={secretary:'sec_action',treasurer:'trs_action',president:'prs_action'}[SESSION.role];
+  try{
+    await turso(`UPDATE expenses SET status=?,${field}='approved',updated_at=datetime('now') WHERE id=?`,[next,id]);
+    const msgs={secretary:'Verified! Sent to Treasurer.',treasurer:'Budget confirmed! Sent to President.',president:'✅ Final approval granted!'};
+    toast(msgs[SESSION.role],'ok');
+    document.getElementById(`ec-${id}`)?.remove();
+    loadDash();
+  }catch(e){toast('Error: '+e.message,'err');}
+}
+
+function openReject(id){rejectingId=id;document.getElementById('rejectReason').value='';document.getElementById('rejectOverlay').classList.add('open');}
+async function doReject(){
+  const reason=document.getElementById('rejectReason').value.trim();
+  if(!reason) return toast('Provide a rejection reason.','err');
+  const field={secretary:'sec_remark',treasurer:'trs_remark',president:'prs_remark'}[SESSION.role];
+  const roleLabel={secretary:'Secretary',treasurer:'Treasurer',president:'President'}[SESSION.role];
+  try{
+    await turso(`UPDATE expenses SET status='rejected',${field}=?,rejected_by=?,updated_at=datetime('now') WHERE id=?`,[reason,roleLabel,rejectingId]);
+    closeModal('rejectOverlay'); toast('Rejected & returned to Admin.','err');
+    document.getElementById(`ec-${rejectingId}`)?.remove(); loadDash();
+  }catch(e){toast('Error: '+e.message,'err');}
+}
+
+// ── History ────────────────────────────────────
+async function loadHistory(){
+  const c=document.getElementById('histContent');
+  c.innerHTML=`<div class="spin-wrap"><span class="spin"></span>Loading…</div>`;
+  try{
+    const all=rows(await turso(`SELECT * FROM expenses ORDER BY created_at DESC`));
+    if(!all.length){c.innerHTML=`<div class="empty"><div class="eico">📭</div><p>No expenses found.</p></div>`;return;}
+    // one aggregate query for all attachment counts, instead of one query per row
+    const counts=rows(await turso(`SELECT expense_id,COUNT(*) c FROM expense_attachments GROUP BY expense_id`));
+    const countMap=Object.fromEntries(counts.map(r=>[String(r.expense_id),r.c]));
+    c.innerHTML=`<div class="twrap"><table>
+      <thead><tr><th>#</th><th>Type</th><th>Date</th><th>Amount</th><th>Invoice</th><th>Submitted By</th><th>Status</th><th>Pipeline</th><th>Rejected By</th><th>Files</th></tr></thead>
+      <tbody>${all.map(e=>{
+        const n=countMap[String(e.id)]||0;
+        return `<tr>
+        <td style="color:var(--t3)">#${e.id}</td>
+        <td><strong>${e.type}</strong>${e.description?`<br><small style="color:var(--t3)">${e.description.substring(0,30)}…</small>`:''}</td>
+        <td>${fd(e.date)}</td><td class="amt">₹${parseFloat(e.amount).toLocaleString('en-IN')}</td>
+        <td style="color:var(--t3)">${e.ref||'—'}</td><td>${e.submitted_by}</td>
+        <td>${sbadge(e.status)}</td><td>${wf(e)}</td>
+        <td style="color:var(--red);font-size:12px">${e.rejected_by||'—'}</td>
+        <td>${n?`<button class="attcount-btn" onclick="viewExpenseAttachments(${e.id},'#${e.id} ${esc(e.type)}')">📎 ${n}</button>`:'<span style="color:var(--t3)">—</span>'}</td>
+      </tr>`;}).join('')}</tbody></table></div>`;
+  }catch(e){c.innerHTML=`<div class="empty"><p style="color:var(--red)">Error: ${e.message}</p></div>`;}
+}
+
+// ── User Management ────────────────────────────
+async function loadUsers(){
+  const c=document.getElementById('userList');
+  c.innerHTML=`<div class="spin-wrap"><span class="spin"></span>Loading…</div>`;
+  try{
+    const users=rows(await turso(`SELECT id,name,username,role,active,created_at FROM users ORDER BY created_at DESC`));
+    if(!users.length){c.innerHTML=`<div class="empty"><div class="eico">👤</div><p>No users yet.</p></div>`;return;}
+    const avColors={admin:'linear-gradient(135deg,#1A56DB,#1344B8)',secretary:'linear-gradient(135deg,#D97706,#B45309)',treasurer:'linear-gradient(135deg,#0891B2,#0E7490)',president:'linear-gradient(135deg,#6D28D9,#5B21B6)',cashier:'linear-gradient(135deg,#0D9F5A,#0A8A4D)'};
+    c.innerHTML=`<div class="umgrid">${users.map(u=>`
+      <div class="ucard" style="opacity:${u.active=='1'||u.active===1?1:0.5}">
+        <div class="uav" style="background:${avColors[u.role]||'#64748B'}">${u.name[0].toUpperCase()}</div>
+        <div class="uinfo">
+          <div class="uname">${u.name}</div>
+          <div class="uuser">@${u.username}</div>
+          <div class="urole">${roleBadge(u.role)}</div>
+        </div>
+        <div class="uacts">
+          <button class="btn btn-warn btn-xs" onclick="openPwReset(${u.id},'${u.name.replace(/'/g,"&#39;")}')" title="Reset password">🔑</button>
+          ${u.username!=='admin'?`
+          <button class="btn btn-ghost btn-xs" onclick="toggleUser(${u.id},${u.active=='1'||u.active===1?0:1})" title="${u.active=='1'||u.active===1?'Deactivate':'Activate'}">${u.active=='1'||u.active===1?'🚫':'✅'}</button>
+          <button class="btn btn-danger btn-xs" onclick="openDelete(${u.id},'${u.name.replace(/'/g,"&#39;")}')" title="Delete">🗑️</button>`:''}
+        </div>
+      </div>`).join('')}</div>`;
+  }catch(e){c.innerHTML=`<div class="empty"><p style="color:var(--red)">Error: ${e.message}</p></div>`;}
+}
+
+async function createUser(){
+  const name=document.getElementById('uName').value.trim();
+  const user=document.getElementById('uUser').value.trim().toLowerCase();
+  const pass=document.getElementById('uPass').value;
+  const role=document.getElementById('uRole').value;
+  if(!name||!user||!pass||!role) return toast('Fill all fields.','err');
+  if(pass.length<6) return toast('Password must be at least 6 characters.','err');
+  if(!/^[a-z0-9_]+$/.test(user)) return toast('Username: only letters, numbers, underscore.','err');
+  try{
+    const h=await sha256(pass);
+    await turso(`INSERT INTO users(name,username,password_hash,role) VALUES(?,?,?,?)`,[name,user,h,role]);
+    toast(`Account created for ${name}.`,'ok');
+    ['uName','uUser','uPass'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('uRole').value='';
+    loadUsers();
+  }catch(e){
+    if(e.message.includes('UNIQUE')) toast('Username already exists.','err');
+    else toast('Error: '+e.message,'err');
+  }
+}
+
+function openPwReset(id,name){resetUserId=id;document.getElementById('pwUserName').textContent=name;document.getElementById('newPw').value='';document.getElementById('pwOverlay').classList.add('open');}
+async function doResetPw(){
+  const p=document.getElementById('newPw').value;
+  if(!p||p.length<6) return toast('Password must be at least 6 characters.','err');
+  try{
+    const h=await sha256(p);
+    await turso(`UPDATE users SET password_hash=? WHERE id=?`,[h,resetUserId]);
+    closeModal('pwOverlay'); toast('Password reset successfully.','ok');
+  }catch(e){toast('Error: '+e.message,'err');}
+}
+async function toggleUser(id,active){
+  try{await turso(`UPDATE users SET active=? WHERE id=?`,[active,id]);toast(active?'Account activated.':'Account deactivated.');loadUsers();}
+  catch(e){toast('Error: '+e.message,'err');}
+}
+function openDelete(id,name){deleteUserId=id;document.getElementById('delUserName').textContent=name;document.getElementById('delOverlay').classList.add('open');}
+async function doDelete(){
+  try{await turso(`DELETE FROM users WHERE id=?`,[deleteUserId]);closeModal('delOverlay');toast('Account deleted.');loadUsers();}
+  catch(e){toast('Error: '+e.message,'err');}
+}
+
+// ── Helpers ────────────────────────────────────
+function sbadge(s){
+  const m={pending_secretary:['b-sec','⏳ With Secretary'],pending_treasurer:['b-trs','⏳ With Treasurer'],pending_president:['b-prs','⏳ With President'],approved:['b-ok','✅ Fully Approved'],rejected:['b-rej','❌ Returned to Admin']};
+  const[cls,lbl]=m[s]||['b-admin',s];
+  return `<span class="badge ${cls}">${lbl}</span>`;
+}
+function roleBadge(r){
+  const m={admin:['b-admin','👨‍💼 Admin'],secretary:['b-sec','📋 Secretary'],treasurer:['b-trs','💰 Treasurer'],president:['b-prs','🏛️ President'],cashier:['b-ok','💵 Cashier']};
+  const[cls,lbl]=m[r]||['b-admin',r];
+  return `<span class="badge ${cls}">${lbl}</span>`;
+}
+function wf(e){
+  const steps=[
+    {l:'Secretary',done:e.sec_action==='approved',rej:e.sec_action&&e.sec_action!=='approved',act:e.status==='pending_secretary'},
+    {l:'Treasurer',done:e.trs_action==='approved',rej:e.trs_action&&e.trs_action!=='approved',act:e.status==='pending_treasurer'},
+    {l:'President',done:e.prs_action==='approved'||e.status==='approved',rej:e.status==='rejected'&&e.rejected_by==='President',act:e.status==='pending_president'},
+  ];
+  return `<div class="wfrow">${steps.map((s,i)=>`${i>0?'<span class="wfarr">›</span>':''}<div class="wfs ${s.rej?'wf-rej':s.done?'wf-done':s.act?'wf-active':'wf-idle'}">${s.rej?'✕':s.done?'✓':s.act?'●':'○'} ${s.l}</div>`).join('')}</div>`;
+}
+function fd(d){if(!d)return'—';return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}
+function toast(msg,type=''){
+  const el=document.createElement('div');
+  el.className=`toast${type?' '+type:''}`;
+  el.innerHTML=(type==='ok'?'✅ ':type==='err'?'❌ ':'ℹ️ ')+msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>el.remove(),3800);
+}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function togglePw(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='password'?'👁':'🙈';}
+
+// Close modals on overlay click
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+// ── Auto-connect on load ───────────────────────
+// Priority: a previously-connected DB in this browser session, else the
+// preconfigured default database above. Setup screen only stays visible
+// if auto-connect fails, pre-filled with what was attempted so the
+// person can just fix and retry.
+(async function(){
+  const savedDb=sessionStorage.getItem('bda_db');
+  const savedTok=sessionStorage.getItem('bda_tok');
+  DB=(savedDb||DEFAULT_DB_URL).replace(/\/$/,'');
+  TOK=savedTok||DEFAULT_DB_TOKEN;
+  document.getElementById('cfgUrl').value=DB;
+  document.getElementById('cfgToken').value=TOK;
+  try{
+    await initDB();
+    sessionStorage.setItem('bda_db',DB);
+    sessionStorage.setItem('bda_tok',TOK);
+    showGuestView();
+  }catch(e){
+    const err=document.getElementById('dbErr');
+    err.textContent='Auto-connect failed: '+e.message+' — check the details below and click Connect.';
+    err.style.display='block';
+  }
+})();
+</script>
+</body>
+</html>
